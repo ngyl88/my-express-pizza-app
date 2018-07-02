@@ -31,8 +31,8 @@ app.get("/pizzas/:id", sendPizzaById);
 
 createPizza = (req, res) => {
   const newPizza = {
-    id: "" + id++,
-    ...req.body
+    ...req.body,
+    id: "" + id++
   };
   pizzas = [...pizzas, newPizza];
   res.send(newPizza);
