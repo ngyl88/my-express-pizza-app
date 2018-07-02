@@ -24,20 +24,12 @@ sendPizzas = (req, res) => {
 };
 sendPizzaById = (req, res) => {
   const targetPizza = getPizzaById(req.params.id);
-  console.log(`Getting pizza... Requested Id: ${req.params.id}
-      pizza retrieved: {
-          id: ${targetPizza.id}
-          name: ${targetPizza.name}
-          price: ${targetPizza.price}
-      }
-  `);
   res.send(targetPizza);
 };
 app.get("/pizzas", sendPizzas);
 app.get("/pizzas/:id", sendPizzaById);
 
 createPizza = (req, res) => {
-  console.log(req.body);
   const newPizza = {
     id: "" + id++,
     ...req.body
@@ -49,13 +41,6 @@ app.post("/pizzas", createPizza);
 
 updatePizza = (req, res) => {
   const targetPizza = getPizzaById(req.params.id);
-  console.log(`Updating pizza... Requested Id: ${req.params.id}`);
-  console.log(`Requested new information:`, req.body);
-  console.log(`Pizza retrieved:
-    id: ${targetPizza.id}
-    name: ${targetPizza.name}
-    price: ${targetPizza.price}
-  `);
   const indexToUpdate = pizzas.indexOf(targetPizza);
   const updatedPizza = { ...targetPizza, ...req.body };
   pizzas[indexToUpdate] = updatedPizza;
@@ -74,6 +59,6 @@ deletePizza = (req, res) => {
         ...pizzas.slice(0, indexToDelete),
         ...pizzas.slice(indexToDelete + 1)
     ];
-    res.send(`${targetPizza.name}, id ${req.params.id} deleted successfully`);
+    res.send(`${targetPizza.name}, (pizza id ${req.params.id}) deleted successfully`);
 };
 app.delete('/pizzas/:id', deletePizza);
