@@ -1,9 +1,6 @@
 const express = require("express");
-// const bodyParser = require("body-parser");
-const PORT = process.env.PORT || 3000;
 
 const app = express();
-// app.use(bodyParser.json());
 app.use(express.json());
 
 let pizzas = [
@@ -14,19 +11,15 @@ let pizzas = [
 ];
 var id = 5;
 
-app.listen(PORT, () => {
-  console.log(`App has started at port ${PORT}`);
-});
-
 getPizzaById = id => pizzas.find(pizza => pizza.id === id);
 
 // GET method
 sendPizzas = (req, res) => {
-  res.send(pizzas);
+  res.json(pizzas);
 };
 sendPizzaById = (req, res) => {
   const targetPizza = getPizzaById(req.params.id);
-  res.send(targetPizza);
+  res.json(targetPizza);
 };
 app.get("/pizzas", sendPizzas);
 app.get("/pizzas/:id", sendPizzaById);
@@ -38,39 +31,50 @@ createPizza = (req, res) => {
     id: "" + id++
   };
   pizzas = [...pizzas, newPizza];
-  res.send(newPizza);
+  res.json(newPizza);
 };
 app.post("/pizzas", createPizza);
 
 // PUT method
 updatePizza = (req, res) => {
-  pizzas = pizzas.map(pizza => {
-    if(pizza.id === req.params.id) return Object.assign(pizza, req.body);
-    return pizza;
-  })
-  res.send(pizzas);
-  // const targetPizza = getPizzaById(req.params.id);
-  // const indexToUpdate = pizzas.indexOf(targetPizza);
-  // const updatedPizza = { ...targetPizza, ...req.body };
-  // pizzas[indexToUpdate] = updatedPizza;
-  // res.send(updatedPizza);
+  // AFTER CLASS DISCUSSION: derek's solution
+  // pizzas = pizzas.map(pizza => {
+  //   if (pizza.id === req.params.id) return Object.assign(pizza, req.body);
+  //   return pizza;
+  // });
+  // res.json(pizzas);
+
+  // Mine
+  const targetPizza = getPizzaById(req.params.id);
+  const indexToUpdate = pizzas.indexOf(targetPizza);
+  const updatedPizza = { ...targetPizza, ...req.body };
+  pizzas[indexToUpdate] = updatedPizza;
+  res.json(updatedPizza);
 };
 app.put("/pizzas/:id", updatePizza);
 
 // DELETE method
 deletePizza = (req, res) => {
-  pizzas = pizzas.filter(pizza => pizza.id !== req.params.id);
-  res.send(pizzas);
-    // const targetPizza = getPizzaById(req.params.id);
-    // if(targetPizza === undefined) {
-    //     res.send(`Unable to retrieve pizza with id ${req.params.id}`);
-    //     return;
-    // }
-    // const indexToDelete = pizzas.indexOf(targetPizza);
-    // pizzas = [
-    //     ...pizzas.slice(0, indexToDelete),
-    //     ...pizzas.slice(indexToDelete + 1)
-    // ];
-    // res.send(`${targetPizza.name}, (pizza id ${req.params.id}) deleted successfully`);
+  // AFTER CLASS DISCUSSION: mayuri's solution
+  // pizzas = pizzas.filter(pizza => pizza.id !== req.params.id);
+  // res.json(pizzas);
+
+  // Mine
+  const targetPizza = getPizzaById(req.params.id);
+  if(targetPizza === undefined) {
+      res.json(`Unable to retrieve pizza with id ${req.params.id}`);
+      return;
+  }
+  const indexToDelete = pizzas.indexOf(targetPizza);
+  pizzas = [
+      ...pizzas.slice(0, indexToDelete),
+      ...pizzas.slice(indexToDelete + 1)
+  ];
+  res.json(`Pizza id ${req.params.id} deleted successfully`);
 };
-app.delete('/pizzas/:id', deletePizza);
+app.delete("/pizzas/:id", deletePizza);
+
+module.exports = {
+  app: app,
+  originPizzas: pizzas
+};
